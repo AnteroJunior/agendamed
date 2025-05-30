@@ -1,26 +1,31 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { ForbiddenException, Injectable } from '@nestjs/common';
+import { LoginAuthDto } from './dto/login-auth.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { IUser } from 'src/interfaces/user.interface';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
-  }
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly usersService: UsersService,
+  ) {}
 
-  findAll() {
-    return `This action returns all auth`;
-  }
+  async login(
+    loginAuthDto: LoginAuthDto,
+  ): Promise<{ message: string; token: string }> {
+    const user: IUser | null = await this.usersService.findByEmail(
+      loginAuthDto.email,
+    );
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
+    if (!user) {
+      throw new ForbiddenException('Usuário não encontrado');
+    }
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
+    if (user.password !== loginAuthDto.password) {
+      throw new ForbiddenException('Senha incorreta');
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+    return { message: 'Usuário logado com sucesso', token: 'token' };
   }
 }
