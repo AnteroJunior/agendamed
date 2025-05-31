@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -15,11 +14,46 @@ datasource db {
 }
 
 model Users {
-  id    Int    @id @default(autoincrement())
-  name  String
-  email String @unique
-  password String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  deleted_at DateTime?
+  id           Int            @id @default(autoincrement())
+  name         String
+  email        String         @unique
+  password     String
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @updatedAt
+  deleted_at   DateTime?
+  Appointments Appointments[]
+}
+
+model Doctors {
+  id            Int            @id @default(autoincrement())
+  name          String
+  speciality_id Int
+  speciality    Specialities   @relation(fields: [speciality_id], references: [id], onDelete: NoAction, onUpdate: Cascade)
+  Appointments  Appointments[]
+}
+
+model Specialities {
+  id           Int            @id @default(autoincrement())
+  name         String
+  Doctors      Doctors[]
+  Appointments Appointments[]
+}
+
+model Appointments {
+  id            Int          @id @default(autoincrement())
+  speciality_id Int
+  doctor_id     Int
+  user_id       Int
+  schedule_day  DateTime
+  notes         String
+  status_code   Int          @default(0)
+  speciality    Specialities @relation(fields: [speciality_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  doctor        Doctors      @relation(fields: [doctor_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user          Users        @relation(fields: [user_id], references: [id], onDelete: NoAction)
+  created_at    DateTime     @default(now())
+  updated_at    DateTime     @updatedAt
+  deleted_at    DateTime?
+
+  @@unique([doctor_id, schedule_day], map: "DoctorId_ScheduleDay")
+  @@unique([user_id, schedule_day], map: "UserId_ScheduleDay")
 }
