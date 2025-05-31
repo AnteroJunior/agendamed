@@ -21,7 +21,7 @@ export class UsersService {
       throw new ForbiddenException('Usuário já cadastrado com esse e-mail.');
     }
 
-    await this.prismaService.clients.create({
+    await this.prismaService.users.create({
       data: {
         name: createAuthDto.name,
         email: createAuthDto.email,
@@ -36,7 +36,7 @@ export class UsersService {
   }
 
   async findByEmail(email: string): Promise<IUser | null> {
-    const user = await this.prismaService.clients.findFirst({
+    const user = await this.prismaService.users.findFirst({
       where: {
         email: email,
       },
