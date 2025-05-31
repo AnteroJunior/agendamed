@@ -4,6 +4,8 @@ import {
   Body,
   ValidationPipe,
   NotFoundException,
+  Patch,
+  Param,
 } from '@nestjs/common';
 import { AppointmentsService } from './appointments.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
@@ -15,9 +17,10 @@ export class AppointmentsController {
   @Post()
   async create(
     @Body(new ValidationPipe()) createAppointmentDto: CreateAppointmentDto,
-  ) {
+  ): Promise<{ message: string } | undefined> {
     try {
-      return await this.appointmentsService.create(createAppointmentDto);
+      await this.appointmentsService.create(createAppointmentDto);
+      return { message: 'Consulta agendada com sucesso.' };
     } catch (error: any) {
       if (error.code === 'P2003') {
         if (error.meta?.constraint?.includes('speciality_id')) {
@@ -32,6 +35,18 @@ export class AppointmentsController {
           'Agendamento não pode ser realizado. Você tem uma consulta agendada nesta data.',
         );
       }
+    }
+  }
+
+  @Patch(':id/finish')
+  async finish(@Param('id') id: number): Promise<{ message: string }> {
+    try {
+      await this.appointmentsService.finish(+id);
+      return { message: 'Agendamento finalizado com sucesso' };
+    } catch (error: any) {
+      throw new NotFoundException(
+        'Agendamento não finalizado. Tente novamente.',
+      );
     }
   }
 }
