@@ -7,13 +7,29 @@ import {
   Patch,
   Param,
   ParseIntPipe,
+  Put,
+  Get,
 } from '@nestjs/common';
 import { AppointmentsService } from './appointments.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
+import { UpdateAppointmentDto } from './dto/update-appointment.dto';
+import { IAppointment } from 'src/interfaces/appointment.interface';
 
 @Controller('appointments')
 export class AppointmentsController {
   constructor(private readonly appointmentsService: AppointmentsService) {}
+
+  @Get()
+  async findAll(): Promise<IAppointment[]> {
+    return await this.appointmentsService.findAll();
+  }
+
+  @Get(':id')
+  async findById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<IAppointment | null> {
+    return (await this.appointmentsService.findById(id)) || null;
+  }
 
   @Post()
   async create(
@@ -62,6 +78,22 @@ export class AppointmentsController {
       console.log(error);
       throw new NotFoundException(
         'Agendamento não cancelado. Tente novamente.',
+      );
+    }
+  }
+
+  @Put(':id')
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(new ValidationPipe()) updateAppointmentDto: UpdateAppointmentDto,
+  ): Promise<{ message: string }> {
+    try {
+      await this.appointmentsService.update(id, updateAppointmentDto);
+      return { message: 'Agendamento atualizado com sucesso' };
+    } catch (error: any) {
+      console.log(error);
+      throw new NotFoundException(
+        'Agendamento não atualizado. Tente novamente.',
       );
     }
   }

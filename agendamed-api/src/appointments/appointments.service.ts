@@ -6,6 +6,7 @@ import {
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { IAppointment } from 'src/interfaces/appointment.interface';
+import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 
 @Injectable()
 export class AppointmentsService {
@@ -19,6 +20,10 @@ export class AppointmentsService {
     });
 
     return appointment;
+  }
+
+  async findAll() {
+    return await this.prismaService.appointments.findMany();
   }
 
   async create(
@@ -85,6 +90,26 @@ export class AppointmentsService {
     return await this.prismaService.appointments.update({
       where: { id: id },
       data: { status_code: 2 },
+    });
+  }
+
+  async update(id: number, updateAppointmentDto: UpdateAppointmentDto) {
+    const appointment = await this.findById(id);
+
+    if (!appointment) {
+      throw new NotFoundException('Agendamento não encontrado');
+    }
+
+    if (appointment.status_code !== 0) {
+      throw new BadRequestException('Agendamento nao pode ser atualizado!');
+    }
+
+    return await this.prismaService.appointments.update({
+      where: { id: id },
+      data: {
+        schedule_day: updateAppointmentDto.schedule_day,
+        notes: updateAppointmentDto.notes,
+      },
     });
   }
 }
