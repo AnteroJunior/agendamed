@@ -6,6 +6,7 @@ import {
   NotFoundException,
   Patch,
   Param,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { AppointmentsService } from './appointments.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
@@ -39,13 +40,28 @@ export class AppointmentsController {
   }
 
   @Patch(':id/finish')
-  async finish(@Param('id') id: number): Promise<{ message: string }> {
+  async finish(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<{ message: string }> {
     try {
-      await this.appointmentsService.finish(+id);
+      await this.appointmentsService.finish(id);
       return { message: 'Agendamento finalizado com sucesso' };
     } catch (error: any) {
       throw new NotFoundException(
         'Agendamento não finalizado. Tente novamente.',
+      );
+    }
+  }
+
+  @Patch(':id/cancel')
+  async cancel(@Param('id') id: number): Promise<{ message: string }> {
+    try {
+      await this.appointmentsService.cancel(+id);
+      return { message: 'Agendamento cancelado com sucesso' };
+    } catch (error: any) {
+      console.log(error);
+      throw new NotFoundException(
+        'Agendamento não cancelado. Tente novamente.',
       );
     }
   }

@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { IAppointment } from 'src/interfaces/appointment.interface';
@@ -44,21 +48,43 @@ export class AppointmentsService {
 
   async finish(id: number) {
     const appointment = await this.findById(id);
-
     if (!appointment) {
       throw new NotFoundException('Agendamento não encontrado');
     }
 
     const isInFuture = new Date(appointment.schedule_day) > new Date();
     const status = appointment.status_code !== 0;
-
     if (isInFuture || status) {
-      throw new BadRequestException('Agendamento não pode ser finalizado!');
+      throw new BadRequestException(
+        'Agendamento não pode ser finalizado! Somente datas passadas podem ser finalizadas ou consultas pendentes.',
+      );
+    }
+
+    const result = await this.prismaService.appointments.update({
+      where: { id },
+      data: { status_code: 1 },
+    });
+
+    return result;
+  }
+
+  async cancel(id: number) {
+    const appointment = await this.findById(id);
+
+    if (!appointment) {
+      throw new NotFoundException('Agendamento não encontrado');
+    }
+
+    const isInPast = new Date(appointment.schedule_day) < new Date();
+    const status = appointment.status_code !== 0;
+
+    if (isInPast || status) {
+      throw new BadRequestException('Agendamento não pode ser cancelado!');
     }
 
     return await this.prismaService.appointments.update({
       where: { id: id },
-      data: { status_code: 1 },
+      data: { status_code: 2 },
     });
   }
 }
