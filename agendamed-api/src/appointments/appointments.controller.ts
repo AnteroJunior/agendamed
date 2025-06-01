@@ -9,11 +9,14 @@ import {
   ParseIntPipe,
   Put,
   Get,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { AppointmentsService } from './appointments.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { IAppointment } from 'src/interfaces/appointment.interface';
+import { Prisma } from 'generated/prisma';
 
 @Controller('appointments')
 export class AppointmentsController {
@@ -28,7 +31,14 @@ export class AppointmentsController {
   async findById(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<IAppointment | null> {
-    return (await this.appointmentsService.findById(id)) || null;
+    try {
+      return (await this.appointmentsService.findById(id)) || null;
+    } catch (error: any) {
+      throw new HttpException(
+        'Agendamento não encontrado',
+        HttpStatus.NOT_FOUND,
+      );
+    }
   }
 
   @Post()
@@ -38,19 +48,21 @@ export class AppointmentsController {
     try {
       await this.appointmentsService.create(createAppointmentDto);
       return { message: 'Consulta agendada com sucesso.' };
-    } catch (error: any) {
-      if (error.code === 'P2003') {
-        if (error.meta?.constraint?.includes('speciality_id')) {
-          throw new NotFoundException('Especialidade não encontrada');
-        } else if (error.meta?.constraint?.includes('doctor_id')) {
-          throw new NotFoundException('Médico não encontrado');
-        } else if (error.meta?.constraint?.includes('user_id')) {
-          throw new NotFoundException('Usuário não encontrado');
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2003') {
+          if (error.meta?.constraint?.includes('speciality_id')) {
+            throw new NotFoundException('Especialidade não encontrada');
+          } else if (error.meta?.constraint?.includes('doctor_id')) {
+            throw new NotFoundException('Médico não encontrado');
+          } else if (error.meta?.constraint?.includes('user_id')) {
+            throw new NotFoundException('Usuário não encontrado');
+          }
+        } else if (error.code === 'P2002') {
+          throw new NotFoundException(
+            'Agendamento não pode ser realizado. Você tem uma consulta agendada nesta data.',
+          );
         }
-      } else if (error.code === 'P2002') {
-        throw new NotFoundException(
-          'Agendamento não pode ser realizado. Você tem uma consulta agendada nesta data.',
-        );
       }
     }
   }
