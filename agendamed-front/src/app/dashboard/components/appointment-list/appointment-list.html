@@ -1,0 +1,20 @@
+<table class="">
+    <thead>
+        <tr>
+            <th>Médico/a</th>
+            <th>Especialidade</th>
+            <th>Horário</th>
+            <th>Observação</th>
+            <th>Situação</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let appointment of appointments">
+            <td>{{ appointment.doctor.name }}</td>
+            <td>{{ appointment.speciality.name }}</td>
+            <td>{{ appointment.schedule_day | date: 'dd/MM/yyyy HH:mm' }}</td>
+            <td>{{ appointment.notes }}</td>
+            <td>{{ appointment.status_code == 0 ? 'Pendente' : appointment.status_code == 1 ? 'Finalizado' : 'Cancelado' }}</td>
+        </tr>
+    </tbody>
+</table>
