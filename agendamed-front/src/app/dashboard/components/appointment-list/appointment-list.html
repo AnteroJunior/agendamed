@@ -12,7 +12,8 @@
 
         <ng-container matColumnDef="schedule_day">
             <th mat-header-cell *matHeaderCellDef> Horário </th>
-            <td mat-cell *matCellDef="let appointment"> {{appointment.schedule_day | date: 'dd/MM/yyyy HH:mm':'UTC'}} </td>
+            <td mat-cell *matCellDef="let appointment"> {{appointment.schedule_day | date: 'dd/MM/yyyy HH:mm':'UTC'}}
+            </td>
         </ng-container>
 
         <ng-container matColumnDef="notes">
@@ -30,12 +31,12 @@
             <th mat-header-cell *matHeaderCellDef> Ações </th>
             <td mat-cell *matCellDef="let appointment">
                 @if (appointment.status_code == 0) {
-                <button matIconButton
-                    [style]="{'background-color': 'green', 'color': 'white'}"
+                <button matIconButton [hidden]="!checkDate(appointment.schedule_day)" [style]="{'background-color': 'green', 'color': 'white'}"
                     aria-label="Example icon button with a delete icon" (click)="finish(appointment.id)">
                     <mat-icon>check</mat-icon>
                 </button>
-                <button matIconButton [style]="{'background-color': 'red', 'color': 'white', 'margin-left': '10px', 'margin-right': '10px'}"
+                <button matIconButton
+                    [style]="{'background-color': 'red', 'color': 'white', 'margin-left': '10px', 'margin-right': '10px'}"
                     aria-label="Example icon button with a delete icon" (click)="cancel(appointment.id)">
                     <mat-icon>close</mat-icon>
                 </button>
@@ -48,6 +49,6 @@
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: tableColumns;"></tr>
+        <tr mat-row *matRowDef="let row; columns: tableColumns;" [ngStyle]="row.status_code === 2 ? {'background-color': '#fecaca'} : {}"></tr>
     </table>
 </section>

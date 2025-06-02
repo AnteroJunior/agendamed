@@ -38,6 +38,10 @@ export class AppointmentList {
 
   constructor() {}
 
+  checkDate(date: Date) {
+    return new Date(date) < new Date();
+  }
+
   finish(id: number) {
     this.http
       .patch(
