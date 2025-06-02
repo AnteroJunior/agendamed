@@ -1,1 +1,13 @@
-<app-appointment-list [appointments]="appointments"></app-appointment-list>
+<mat-drawer-container class="h-screen">
+    <mat-drawer mode="side" opened>
+        <app-menu></app-menu>
+    </mat-drawer>
+    <mat-drawer-content class="flex flex-col items-center justify-center h-[100%]">
+        <section class="p-5">
+            <h2 class="text-3xl font-bold mb-4">Bem vindo de volta!</h2>
+            <button matButton="filled" [style]="{'background-color': 'green', 'color': 'white'}" (click)="openRegisterDialog()">Marcar nova
+                consulta</button>
+            <app-appointment-list [appointments]="appointments"></app-appointment-list>
+        </section>
+    </mat-drawer-content>
+</mat-drawer-container>

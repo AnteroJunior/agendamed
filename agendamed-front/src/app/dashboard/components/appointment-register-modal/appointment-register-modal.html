@@ -1,0 +1,30 @@
+<h2 mat-dialog-title>Cadastrar nova consulta</h2>
+<mat-dialog-content>
+    <form (submit)="handleSubmit()" formGroup="registerForm" class="flex flex-col">
+        <mat-form-field>
+            <mat-label>Especialidade</mat-label>
+            <mat-select formControlName="speciality_id" required>
+                <mat-option>--</mat-option>
+                @for (speciality of specialities; track speciality) {
+                <mat-option [value]="speciality">{{speciality}}</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+        <div class="flex flex-col">
+            <label for="password">Senha</label>
+            <input type="password" formControlName="password" class="mb-2 p-2 border border-gray-300" required>
+        </div>
+        <mat-form-field>
+            <mat-label>Observações</mat-label>
+            <textarea matInput formControlName="notes"></textarea>
+        </mat-form-field>
+        <div class="flex flex-col mt-4 items-center justify-center gap-2 w-[100%]">
+            <button [disabled]="!registerForm.valid"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-400">Entrar</button>
+        </div>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button matButton>No Thanks</button>
+    <button matButton [mat-dialog-close]="" cdkFocusInitial>Marcar consulta</button>
+</mat-dialog-actions>

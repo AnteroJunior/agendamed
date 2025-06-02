@@ -1,20 +1,53 @@
-<table class="">
-    <thead>
-        <tr>
-            <th>Médico/a</th>
-            <th>Especialidade</th>
-            <th>Horário</th>
-            <th>Observação</th>
-            <th>Situação</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let appointment of appointments">
-            <td>{{ appointment.doctor.name }}</td>
-            <td>{{ appointment.speciality.name }}</td>
-            <td>{{ appointment.schedule_day | date: 'dd/MM/yyyy HH:mm' }}</td>
-            <td>{{ appointment.notes }}</td>
-            <td>{{ appointment.status_code == 0 ? 'Pendente' : appointment.status_code == 1 ? 'Finalizado' : 'Cancelado' }}</td>
-        </tr>
-    </tbody>
-</table>
+<section>
+    <table mat-table [dataSource]="appointments" class="mat-elevation-z8">
+        <ng-container matColumnDef="doctor">
+            <th mat-header-cell *matHeaderCellDef> Médico </th>
+            <td mat-cell *matCellDef="let appointment"> {{appointment.doctor.name}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="speciality">
+            <th mat-header-cell *matHeaderCellDef> Especialidade </th>
+            <td mat-cell *matCellDef="let appointment"> {{appointment.speciality.name}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="schedule_day">
+            <th mat-header-cell *matHeaderCellDef> Horário </th>
+            <td mat-cell *matCellDef="let appointment"> {{appointment.schedule_day | date: 'dd/MM/yyyy HH:mm'}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="notes">
+            <th mat-header-cell *matHeaderCellDef> Observação </th>
+            <td mat-cell *matCellDef="let appointment"> {{appointment.notes}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status_code">
+            <th mat-header-cell *matHeaderCellDef> Situação </th>
+            <td mat-cell *matCellDef="let appointment"> {{appointment.status_code == 0 ? 'Pendente' :
+                appointment.status_code == 1 ? 'Finalizado' : 'Cancelado'}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef> Ações </th>
+            <td mat-cell *matCellDef="let appointment">
+                @if (appointment.status_code == 0) {
+                <button matIconButton
+                    [style]="{'background-color': 'green', 'color': 'white'}"
+                    aria-label="Example icon button with a delete icon" (click)="cancel(appointment.id)">
+                    <mat-icon>check</mat-icon>
+                </button>
+                <button matIconButton [style]="{'background-color': 'red', 'color': 'white', 'margin-left': '10px', 'margin-right': '10px'}"
+                    aria-label="Example icon button with a delete icon" (click)="cancel(appointment.id)">
+                    <mat-icon>close</mat-icon>
+                </button>
+                <button matIconButton [style]="{'background-color': 'black', 'color': 'white'}"
+                    aria-label="Example icon button with a delete icon" (click)="cancel(appointment.id)">
+                    <mat-icon>visibility</mat-icon>
+                </button>
+                }
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="tableColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: tableColumns;"></tr>
+    </table>
+</section>

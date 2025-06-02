@@ -1,0 +1,3 @@
+<mat-action-list role="list" *ngFor="let item of menuItems">
+    <mat-list-item role="listitem" (click)="item.action()" class="cursor-pointer">{{item.name}}</mat-list-item>
+</mat-action-list>
