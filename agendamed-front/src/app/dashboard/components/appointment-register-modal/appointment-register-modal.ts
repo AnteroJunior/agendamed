@@ -26,7 +26,6 @@ import { ReactiveFormsModule } from '@angular/forms';
   selector: 'app-appointment-register-modal',
   imports: [
     MatDialogActions,
-    MatDialogClose,
     MatDialogTitle,
     MatDialogContent,
     MatSelectModule,
@@ -87,8 +86,6 @@ export class AppointmentRegisterModal implements OnInit {
   }
 
   handleSpecialityChange(event: any) {
-    console.log(event);
-
     this.http
       .get<IDoctor[]>(
         `${environment.apiUrl}/appointments/speciality/${event.value}`,
@@ -129,7 +126,6 @@ export class AppointmentRegisterModal implements OnInit {
       )
       .subscribe({
         next: (response) => {
-          console.log(response);
           this.dialogRef.close();
         },
         error: (error) => {

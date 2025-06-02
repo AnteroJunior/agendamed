@@ -23,7 +23,6 @@ export class Register {
   })
 
   handleSubmit(): void {
-    console.log(this.registerForm.value);
     this.http.post<IRegister>(`${environment.apiUrl}/users`, this.registerForm.value).subscribe({
       next: (response: IRegister) => {
         alert(response.message);
