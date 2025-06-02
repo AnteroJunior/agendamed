@@ -19,6 +19,8 @@ import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { IAppointment } from 'src/interfaces/appointment.interface';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { ISpeciality } from 'src/interfaces/speciality.interface';
+import { IDoctor } from 'src/interfaces/doctor.interface';
 
 @Controller('appointments')
 export class AppointmentsController {
@@ -28,6 +30,20 @@ export class AppointmentsController {
   @Get()
   async findAll(@Req() req): Promise<IAppointment[]> {
     return await this.appointmentsService.findAll(+req.user?.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('speciality')
+  async findAllSpeciality(): Promise<ISpeciality[]> {
+    return await this.appointmentsService.findAllSpeciality();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('speciality/:speciality_id')
+  async findDoctorBySpeciality(
+    @Param('speciality_id', ParseIntPipe) speciality_id: number,
+  ): Promise<IDoctor[]> {
+    return await this.appointmentsService.findDoctorBySpeciality(speciality_id);
   }
 
   @UseGuards(JwtAuthGuard)

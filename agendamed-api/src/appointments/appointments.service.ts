@@ -7,10 +7,22 @@ import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { IAppointment } from 'src/interfaces/appointment.interface';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
+import { ISpeciality } from 'src/interfaces/speciality.interface';
+import { IDoctor } from 'src/interfaces/doctor.interface';
 
 @Injectable()
 export class AppointmentsService {
   constructor(private readonly prismaService: PrismaService) {}
+
+  async findAllSpeciality(): Promise<ISpeciality[]> {
+    return await this.prismaService.specialities.findMany();
+  }
+
+  async findDoctorBySpeciality(speciality_id: number): Promise<IDoctor[]> {
+    return await this.prismaService.doctors.findMany({
+      where: { speciality_id: speciality_id },
+    });
+  }
 
   async findById(id: number, user_id: number): Promise<IAppointment | null> {
     const appointment = await this.prismaService.appointments.findFirst({
