@@ -1,0 +1,29 @@
+<section class="container mx-auto">
+    <div class="flex flex-col items-center">
+        <img src="favicon.ico" alt="Health Care">
+        <h1 class="text-3xl font-bold">AgendaMed - Cadastro</h1>
+    </div>
+    <form (submit)="handleSubmit()" [formGroup]="registerForm" class="flex flex-col">
+        <div class="flex flex-col">
+            <label for="name">Nome</label>
+            <input type="text" formControlName="name" class="mb-2 p-2 border border-gray-300" required>
+        </div>
+        <div class="flex flex-col">
+            <label for="email">Email</label>
+            <input type="email" formControlName="email" class="mb-2 p-2 border border-gray-300" required>
+        </div>
+        <div class="flex flex-col">
+            <label for="password">Senha</label>
+            <input type="password" formControlName="password" class="mb-2 p-2 border border-gray-300" required>
+        </div>
+        <div class="flex flex-col">
+            <label for="confirmPassword">Confirmar Senha</label>
+            <input type="password" formControlName="confirmPassword" class="mb-2 p-2 border border-gray-300" required>
+        </div>
+        <div class="flex flex-col mt-4 items-center justify-center gap-2 w-[100%]">
+            <button [disabled]="!registerForm.valid"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-400">Registrar</button>
+            <p>Já tem uma conta? <a href="" class="text-blue-500 cursor-pointer">Faça login aqui</a></p>
+        </div>
+    </form>
+</section>
