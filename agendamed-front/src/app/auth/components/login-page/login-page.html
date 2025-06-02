@@ -1,0 +1,26 @@
+<section class="grid md:grid-cols-3 h-[100%] items-center">
+    <div class="flex flex-col md:col-span-1 p-4 w-[300px] md:border-r border-gray-300 h-screen justify-center">
+        <div class="flex flex-col items-center justify-center">
+            <img src="favicon.ico" width="100" height="100" alt="AgendaMed">
+            <h1 class="text-3xl font-bold">AgendaMed</h1>
+        </div>
+
+        <form (submit)="handleSubmit()" [formGroup]="loginForm" class="flex flex-col">
+            <div class="flex flex-col">
+                <label for="email">Email</label>
+                <input type="email" formControlName="email" class="mb-2 p-2 border border-gray-300" required>
+            </div>
+            <div class="flex flex-col">
+                <label for="password">Senha</label>
+                <input type="password" formControlName="password" class="mb-2 p-2 border border-gray-300" required>
+            </div>
+            <div class="flex flex-col mt-4 items-center justify-center gap-2 w-[100%]">
+                <button [disabled]="!loginForm.valid" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-400">Entrar</button>
+                <p>Não tem uma conta? <a href="register" class="text-blue-500 cursor-pointer">Cadastre-se</a></p>
+            </div>
+        </form>
+    </div>
+    <div class="md:col-span-2 flex items-center justify-center">
+        <img src="doctors.svg" class="hidden md:block" alt="Doctors talking">
+    </div>
+</section>
