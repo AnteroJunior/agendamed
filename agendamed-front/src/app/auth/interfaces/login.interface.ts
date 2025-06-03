@@ -4,7 +4,9 @@ export interface ILogin {
 }
 
 export interface ILoginError {
-    message: string,
-    error: string,
-    statusCode: number
+    error: {
+        message: string,
+        error: string,
+        statusCode: number
+    }
 }
