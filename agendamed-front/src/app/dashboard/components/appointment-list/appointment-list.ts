@@ -9,6 +9,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment.development';
 import { MatDialog } from '@angular/material/dialog';
 import { AppointmentUpdateModal } from '../appointment-update-modal/appointment-update-modal';
+import { ConfirmModal } from '../confirm-modal/confirm-modal';
 
 @Component({
   selector: 'app-appointment-list',
@@ -64,24 +65,6 @@ export class AppointmentList {
   }
 
   cancel(id: number) {
-    this.http
-      .patch(
-        `${environment.apiUrl}/appointments/${id}/cancel`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-          },
-        }
-      )
-      .subscribe({
-        next: (response) => {
-          this.updateList();
-        },
-        error: (error) => {
-          console.log(error);
-        },
-      });
   }
 
   updateList() {
@@ -99,6 +82,14 @@ export class AppointmentList {
           console.log(error);
         },
       });
+  }
+
+  openConfirmDialog(appointment_id: number): void {
+    this.dialog.open(ConfirmModal, { data: { id: +appointment_id }, width: '400px' });
+
+    this.dialog.afterAllClosed.subscribe(() => {
+      this.updateList();
+    })
   }
 
   openUpdateDialog(appointment_id: number): void {

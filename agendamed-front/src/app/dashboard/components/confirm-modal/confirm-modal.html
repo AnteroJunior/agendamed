@@ -1,0 +1,8 @@
+<h2 mat-dialog-title>Ação irreversível!</h2>
+<mat-dialog-content>
+    <p>Tem certeza que você deseja cancelar a consulta?</p>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button matButton (click)="onNoClick()" class="bg-red-500 text-white">Fechar</button>
+    <button matButton (click)="onYesClick()" class="bg-green-500 text-white">Confirmar</button>
+</mat-dialog-actions>

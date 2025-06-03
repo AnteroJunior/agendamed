@@ -1,9 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import {
-  Component,
-  inject,
-  OnInit,
-} from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { IAppointment } from '../interfaces/appointment.interface';
 import { environment } from '../../../environments/environment.development';
 import { Menu } from '../../shared/menu/menu';
@@ -18,9 +14,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
-
-
-import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
+import {
+  MAT_DATE_LOCALE,
+  provideNativeDateAdapter,
+} from '@angular/material/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
@@ -34,11 +31,11 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
     MatFormFieldModule,
     MatSelectModule,
     ReactiveFormsModule,
-    MatInputModule
+    MatInputModule,
   ],
   providers: [
     provideNativeDateAdapter(),
-    { provide: MAT_DATE_LOCALE, useValue: 'pt-BR' }
+    { provide: MAT_DATE_LOCALE, useValue: 'pt-BR' },
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
@@ -51,9 +48,9 @@ export class Dashboard implements OnInit {
   filterForm = new FormGroup({
     status_code: new FormControl(''),
     schedule_day: new FormControl(''),
-  })
+  });
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit(): void {
     this.http
@@ -61,7 +58,8 @@ export class Dashboard implements OnInit {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
-      }).subscribe({
+      })
+      .subscribe({
         next: (response: IAppointment[]) => {
           this.appointments = response;
         },
@@ -76,12 +74,17 @@ export class Dashboard implements OnInit {
   }
 
   handleSubmit() {
+    const day = (this.filterForm.value.schedule_day as unknown as Date).toISOString().split('T')[0];
     this.http
-      .get<IAppointment[]>(`${environment.apiUrl}/appointments?status_code=${this.filterForm.value.status_code}&schedule_day=${this.filterForm.value.schedule_day}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-        },
-      }).subscribe({
+      .get<IAppointment[]>(
+        `${environment.apiUrl}/appointments?status_code=${this.filterForm.value.status_code}&schedule_day=${day}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+          },
+        }
+      )
+      .subscribe({
         next: (response: IAppointment[]) => {
           this.appointments = response;
         },

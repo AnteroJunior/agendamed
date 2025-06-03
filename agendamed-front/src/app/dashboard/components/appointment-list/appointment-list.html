@@ -37,7 +37,7 @@
                 </button>
                 <button matIconButton
                     [style]="{'background-color': 'red', 'color': 'white', 'margin-left': '10px', 'margin-right': '10px'}"
-                    aria-label="Example icon button with a delete icon" (click)="cancel(appointment.id)">
+                    aria-label="Example icon button with a delete icon" (click)="openConfirmDialog(appointment.id)">
                     <mat-icon>close</mat-icon>
                 </button>
                 <button matIconButton [style]="{'background-color': 'black', 'color': 'white'}"
