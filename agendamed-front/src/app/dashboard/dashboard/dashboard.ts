@@ -74,10 +74,24 @@ export class Dashboard implements OnInit {
   }
 
   handleSubmit() {
-    const day = (this.filterForm.value.schedule_day as unknown as Date).toISOString().split('T')[0];
+    let schedule_day = '';
+    let status_code = '';
+
+    if(this.filterForm.value.schedule_day) {
+      const date = new Date(this.filterForm.value.schedule_day);
+      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const year = date.getFullYear();
+      schedule_day = `${year}-${month}-${day}`
+    }
+
+    if(this.filterForm.value.status_code != null) {
+      status_code = this.filterForm.value.status_code
+    }
+
     this.http
       .get<IAppointment[]>(
-        `${environment.apiUrl}/appointments?status_code=${this.filterForm.value.status_code}&schedule_day=${day}`,
+        `${environment.apiUrl}/appointments?status_code=${status_code}&schedule_day=${schedule_day}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('access_token')}`,

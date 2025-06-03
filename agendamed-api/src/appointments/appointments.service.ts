@@ -69,8 +69,8 @@ export class AppointmentsService {
     
     return await this.prismaService.appointments.findMany({
       where,
-      skip: (page - 1) * 10,
-      take: 10,
+      skip: (page - 1) * 5,
+      take: 5,
       include: {
         speciality: true,
         doctor: true,

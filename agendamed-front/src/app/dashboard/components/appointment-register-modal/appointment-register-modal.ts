@@ -105,9 +105,8 @@ export class AppointmentRegisterModal implements OnInit {
   }
 
   handleSubmit() {
-    const formDate = (this.registerForm.value.schedule_day as unknown as Date).toISOString().split('T')[0];
-    const formattedDate =  new Date(`${formDate}T${this.registerForm.value.schedule_hour}:00`).toISOString();
-
+    const formDate = new Date(this.registerForm.value.schedule_day as unknown as Date).toISOString().split('T')[0];
+    const formattedDate =  new Date(`${formDate}T${this.registerForm.value.schedule_hour}:00Z`);
     this.http
       .post(
         `${environment.apiUrl}/appointments`,
