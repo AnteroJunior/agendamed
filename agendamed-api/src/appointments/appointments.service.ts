@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { IAppointment } from 'src/interfaces/appointment.interface';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { ISpeciality } from 'src/interfaces/speciality.interface';

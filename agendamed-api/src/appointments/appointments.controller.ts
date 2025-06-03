@@ -19,7 +19,7 @@ import { AppointmentsService } from './appointments.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { IAppointment } from 'src/interfaces/appointment.interface';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ISpeciality } from 'src/interfaces/speciality.interface';
 import { IDoctor } from 'src/interfaces/doctor.interface';
 import { FilterAppointmentsDto } from './dto/filter-appointment.dto';
