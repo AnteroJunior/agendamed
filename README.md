@@ -30,11 +30,13 @@ O `.env` será importante para que o Prisma realize a conexão com o banco de da
 
 Primeiro, vamos garantir que o nosso SQL Server esteja rodando normalmente, via aplicação desktop ou via Docker (`docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=<MUDE_A_SENHA>" -p 1433:1433 -v agendamed:/var/opt/mssql -d mcr.microsoft.com/mssql/server:2022-latest`).
 
+OBS: Para o desenvolvimento desse projeto utilizei o SQL Server em Docker.
+
 > A senha deve conter pelo menos 8 caracteres, letras maiúsculas e minúsculas e números.
 
 > Caso queira executar via Docker, crie um volume para poder servir durante as próximas inicializações e coloque no bind com o path indicado acima.
 
-> Para criar o volume: docker volume create 'nome'
+> Para criar o volume: docker volume create agendamed
 
 ### API
 
@@ -349,11 +351,17 @@ model Appointments {
 }
 ```
 
+## Testes unitários
+Os testes unitários foram implementados somente no back-end, utilizando o Jest.
+
+Para executar os testes vá no projeto `agendamed-api` e rode o seguinte comando no terminal: `npm run test`. Os testes unitários serão validados.
+
 ## Tecnologias utilizadas
 
 * Angular
 * NestJS
 * SQL Server
+* Docker
 
 No Angular, para aumentar a produtividade e garantir o padrão de desenvolvimento de componentes, é utilizado o Angular Material.
 No NestJS utilizaremos Prisma como ORM.
