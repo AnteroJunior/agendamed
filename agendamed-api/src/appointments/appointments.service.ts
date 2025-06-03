@@ -13,7 +13,7 @@ import { FilterAppointmentsDto } from './dto/filter-appointment.dto';
 
 @Injectable()
 export class AppointmentsService {
-  constructor(private readonly prismaService: PrismaService) { }
+  constructor(private readonly prismaService: PrismaService) {}
 
   async findAllSpeciality(): Promise<ISpeciality[]> {
     return await this.prismaService.specialities.findMany();
@@ -43,7 +43,7 @@ export class AppointmentsService {
   async findAll(
     user_id: number,
     filters: FilterAppointmentsDto,
-  ): Promise<IAppointment[]> {
+  ): Promise<{ appointments: IAppointment[]; total: number }> {
     const { page = 1, status_code, schedule_day } = filters;
 
     const where: any = {
@@ -66,16 +66,20 @@ export class AppointmentsService {
         lt: end,
       };
     }
-    
-    return await this.prismaService.appointments.findMany({
-      where,
-      skip: (page - 1) * 5,
-      take: 5,
-      include: {
-        speciality: true,
-        doctor: true,
-      },
-    });
+    const [appointments, total] = await Promise.all([
+      this.prismaService.appointments.findMany({
+        where,
+        skip: (page - 1) * 5,
+        take: 5,
+        include: {
+          speciality: true,
+          doctor: true,
+        },
+      }),
+      this.prismaService.appointments.count({ where }),
+    ]);
+
+    return { appointments, total };
   }
 
   async create(

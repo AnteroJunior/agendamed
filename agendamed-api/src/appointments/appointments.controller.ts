@@ -33,7 +33,7 @@ export class AppointmentsController {
   async findAll(
     @Req() req,
     @Query() filters: FilterAppointmentsDto,
-  ): Promise<IAppointment[]> {
+  ): Promise<{ appointments: IAppointment[]; total: number }> {
     return await this.appointmentsService.findAll(+req.user?.id, filters);
   }
 

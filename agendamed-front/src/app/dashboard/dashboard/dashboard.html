@@ -31,6 +31,15 @@
                 </form>
             </div>
             <app-appointment-list [appointments]="appointments"></app-appointment-list>
+            <mat-paginator 
+                #paginator 
+                (page)="handlePageEvent($event)"
+                [pageIndex]="0"
+                [length]="total"
+                [pageSize]="5"
+                [hidePageSize]="true"
+            >
+            </mat-paginator>
         </section>
     </mat-drawer-content>
 </mat-drawer-container>
