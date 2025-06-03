@@ -1,5 +1,7 @@
 # AgendaMed
 
+<img src="./login.png" height='auto'>
+
 O AgendaMed é um sistema de agendamento de consultas médicas com uma interface limpa e agradável.
 
 ## Sumário
@@ -7,9 +9,14 @@ O AgendaMed é um sistema de agendamento de consultas médicas com uma interface
 2. Rotas da API
 
 ## Como rodar o projeto
+Antes de tudo, é importante que você tenha o Angular e o NestJS instalado em sua máquina:
+
+Angular: `npm install -g @angular/cli`
+NestJS: `npm i -g @nestjs/cli`
+
 Teremos 3 serviços (ou camadas): front, api e banco de dados. 
 
-Alterações que precisam ser feitas: criação de arquivo `.env` dentro de cada repositório.
+> **Alterações que precisam ser feitas:** criação de arquivo `.env` dentro do projeto da API. Já tem um .env.example para se basear
 
 A API terá o arquivo `.env` no formato:
 
@@ -27,9 +34,11 @@ Primeiro, vamos garantir que o nosso SQL Server esteja rodando normalmente, via 
 
 > Caso queira executar via Docker, crie um volume para poder servir durante as próximas inicializações e coloque no bind com o path indicado acima.
 
+> Para criar o volume: docker volume create 'nome'
+
 ### API
 
-Antes de iniciar a execução da API, garanta que o banco de dados está rodando normalmente, além de que você deve realizar as migrations dentro do projeto da API com `npx prisma migrate dev --name init` e logo após executar o arquivo de seed (`seed.ts`) com `npx prisma db seed`.
+Antes de iniciar a execução da API, garanta que o banco de dados está rodando normalmente, além de que você deve realizar as migrations dentro do projeto da API com `npx prisma migrate dev --name init`, que ela vai executar o arquivo de seed (`seed.ts`) com `npx prisma db seed`.
 
 Com os comandos executados com sucesso, podemos executar a API normalmente com `npm run start:dev`.
 
@@ -38,8 +47,33 @@ Para executar o front-end, vamos ao projeto e executamos o comando `ng serve`.
 
 Agora, temos nosso projeto funcionando normalmente.
 
-## Rotas da API
+### Utilização e regras
+* Antes de tudo, devemos registrar um usuário na plataforma, via formulário de registro, disponível em `/register`.
 
+<img src="./register.png" height='auto'>
+
+Com a criação ok, você será redirecionado para o login (`/login`)
+
+* Com o login feito, acessamos a dashboard do usuário, que consiste em uma barra lateral e uma seção principal com a listagem das consultas agendadas.
+
+<img src="./dashboard.png" height='auto'>
+
+Na página de dashboard, podemos criar uma nova consulta por meio do modal:
+<img src="./register-appointment.png" height='auto'>
+
+**Regras**
+
+  1. Ao selecionar a especialidade, o sistema faz o consumo da rota de médicos e puxa somente aqueles vinculados à especialidade selecionada.
+  2. Todos os campos são obrigatórios.
+
+
+No dashboard teremos 3 tipos de status: pendente, finalizado e cancelado. Para cada um desses teremos uma regra:
+  1. Só podemos finalizar um atendimento se for data PASSADA e tiver status "pendente";
+  2. Só podemos cancelar um atendimento se for data FUTURA e tiver status "pendente";
+  3. Só podemos alterar a consulta - menos especialidade e médico - se o status for pendente.
+  <img src="./update-appointment.png" >
+
+## Rotas da API
 
 URL: http://localhost:3000
 
@@ -248,8 +282,6 @@ model Appointments {
 }
 ```
 
-### 
-
 ## Tecnologias utilizadas
 
 * Angular
@@ -260,29 +292,6 @@ No Angular, para aumentar a produtividade e garantir o padrão de desenvolviment
 No NestJS utilizaremos Prisma como ORM.
 
 Para documentar o projeto, iremos utilizar o Swagger para a API e um README para cada camada.
-
-## Banco de dados
-
-A organização do banco de dados será com as seguintes tabelas:
-1) Users
-    * name
-    * email (unique)
-    * password 
-
-2) Appointments
-    * speciality_id
-    * doctor_id
-    * user_id
-    * schedule_day
-    * notes
-    * status_code
-
-3) Doctors
-    * name
-    * speciality_id
-
-4) Specialities
-    * name
 
 ## Autor
 Antero Júnior
