@@ -142,6 +142,28 @@ Resposta
 }
 ```
 
+**GET `/appointments`**
+
+**Descrição:** buscar todas as consultas do usuário (filtro (dd/mm/yyyy e status) e paginação (10 por página))
+
+Query
+``` json
+http://localhost:3000/appointments/?schedule_day=yyyy-mm-dd&status_code=
+```
+
+Resposta
+``` json
+[
+  {
+    "speciality_id": 1,
+    "doctor_id": 1,
+    "user_id": 1,
+    "schedule_day": "2025-05-05T14:30:00Z",
+    "notes": "Adicione informações importantes"
+  }
+]
+```
+
 **GET `/appointments/:id`**
 
 **Descrição:** busca informações sobre consulta específica
@@ -193,6 +215,51 @@ Resposta
 		"updated_at": "2025-05-31T18:06:07.681Z",
 		"deleted_at": null
 	},
+]
+```
+
+**GET `/appointments/speciality`**
+
+**Descrição:** busca todos os registros de especialidades cadastradas
+
+Resposta
+``` json
+[
+	{
+		"id": 1,
+		"name": "Cardiologia"
+	},
+	{
+		"id": 2,
+		"name": "Dermatologia"
+	},
+	{
+		"id": 3,
+		"name": "Ortopedia"
+	},
+	{
+		"id": 4,
+		"name": "Pediatria"
+	},
+	{
+		"id": 5,
+		"name": "Neurologia"
+	}
+]
+```
+
+**GET `/appointments/speciality/:id`**
+
+**Descrição:** busca os registros de todos os médicos vinculados à especialidade informada
+
+Resposta
+``` json
+[
+	{
+		"id": 4,
+		"name": "Dra. Ana Lima",
+		"speciality_id": 4
+	}
 ]
 ```
 
