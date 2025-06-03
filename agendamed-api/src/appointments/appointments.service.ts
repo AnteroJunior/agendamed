@@ -9,10 +9,11 @@ import { IAppointment } from 'src/interfaces/appointment.interface';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
 import { ISpeciality } from 'src/interfaces/speciality.interface';
 import { IDoctor } from 'src/interfaces/doctor.interface';
+import { FilterAppointmentsDto } from './dto/filter-appointment.dto';
 
 @Injectable()
 export class AppointmentsService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) { }
 
   async findAllSpeciality(): Promise<ISpeciality[]> {
     return await this.prismaService.specialities.findMany();
@@ -39,9 +40,37 @@ export class AppointmentsService {
     return appointment;
   }
 
-  async findAll(user_id: number): Promise<IAppointment[]> {
+  async findAll(
+    user_id: number,
+    filters: FilterAppointmentsDto,
+  ): Promise<IAppointment[]> {
+    const { page = 1, status_code, schedule_day } = filters;
+
+    const where: any = {
+      user_id,
+    };
+
+    if (status_code) {
+      where.status_code = +status_code;
+    }
+
+    if (schedule_day) {
+      const date = new Date(schedule_day);
+      const start = new Date(date);
+      start.setUTCHours(0, 0, 0, 0);
+      const end = new Date(start);
+      end.setUTCDate(end.getUTCDate() + 1);
+
+      where.schedule_day = {
+        gte: start,
+        lt: end,
+      };
+    }
+    
     return await this.prismaService.appointments.findMany({
-      where: { user_id: user_id },
+      where,
+      skip: (page - 1) * 10,
+      take: 10,
       include: {
         speciality: true,
         doctor: true,

@@ -5,8 +5,31 @@
     <mat-drawer-content class="flex flex-col items-center justify-center h-[100%]">
         <section class="p-5">
             <h2 class="text-3xl font-bold mb-4">Bem vindo de volta!</h2>
-            <button matButton="filled" [style]="{'background-color': 'green', 'color': 'white'}" (click)="openRegisterDialog()">Marcar nova
-                consulta</button>
+            <button matButton="filled" [style]="{'background-color': 'green', 'color': 'white'}"
+                (click)="openRegisterDialog()">Marcar nova consulta</button>
+
+            <div class="mt-5">
+                <h2 class="text-2xl font-bold mb-4">Minhas consultas</h2>
+                <form class="flex gap-4" [formGroup]="filterForm" (submit)="handleSubmit()">
+                    <mat-form-field>
+                        <mat-label>Status</mat-label>
+                        <mat-select matNativeControl formControlName="status_code">
+                            <mat-option value="">---</mat-option>
+                            <mat-option value="0">Pendente</mat-option>
+                            <mat-option value="1">Finalizado</mat-option>
+                            <mat-option value="2">Cancelado</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-label>Escolha uma data</mat-label>
+                        <input matInput [matDatepicker]="picker">
+                        <mat-hint>DD/MM/YYYY</mat-hint>
+                        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </mat-form-field>
+                    <button matButton="filled">Buscar</button>
+                </form>
+            </div>
             <app-appointment-list [appointments]="appointments"></app-appointment-list>
         </section>
     </mat-drawer-content>

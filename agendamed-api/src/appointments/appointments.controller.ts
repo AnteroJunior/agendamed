@@ -13,6 +13,7 @@ import {
   HttpStatus,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 import { AppointmentsService } from './appointments.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
@@ -21,24 +22,26 @@ import { IAppointment } from 'src/interfaces/appointment.interface';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { ISpeciality } from 'src/interfaces/speciality.interface';
 import { IDoctor } from 'src/interfaces/doctor.interface';
+import { FilterAppointmentsDto } from './dto/filter-appointment.dto';
 
+@UseGuards(JwtAuthGuard)
 @Controller('appointments')
 export class AppointmentsController {
   constructor(private readonly appointmentsService: AppointmentsService) {}
 
-  @UseGuards(JwtAuthGuard)
   @Get()
-  async findAll(@Req() req): Promise<IAppointment[]> {
-    return await this.appointmentsService.findAll(+req.user?.id);
+  async findAll(
+    @Req() req,
+    @Query() filters: FilterAppointmentsDto,
+  ): Promise<IAppointment[]> {
+    return await this.appointmentsService.findAll(+req.user?.id, filters);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('speciality')
   async findAllSpeciality(): Promise<ISpeciality[]> {
     return await this.appointmentsService.findAllSpeciality();
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('speciality/:speciality_id')
   async findDoctorBySpeciality(
     @Param('speciality_id', ParseIntPipe) speciality_id: number,
@@ -46,7 +49,6 @@ export class AppointmentsController {
     return await this.appointmentsService.findDoctorBySpeciality(speciality_id);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async findById(
     @Req() req: any,
@@ -64,7 +66,6 @@ export class AppointmentsController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
   @Post()
   async create(
     @Req() req: any,
@@ -78,13 +79,9 @@ export class AppointmentsController {
       return { message: 'Consulta agendada com sucesso.' };
     } catch (error) {
       if (error.code === 'P2003') {
-        if (error.meta?.constraint?.includes('speciality_id')) {
-          throw new NotFoundException('Especialidade não encontrada');
-        } else if (error.meta?.constraint?.includes('doctor_id')) {
-          throw new NotFoundException('Médico não encontrado');
-        } else if (error.meta?.constraint?.includes('user_id')) {
-          throw new NotFoundException('Usuário não encontrado');
-        }
+        throw new NotFoundException(
+          'Agendamento não pode ser realizado. Tente novamente.',
+        );
       } else if (error.code === 'P2002') {
         throw new NotFoundException(
           'Agendamento não pode ser realizado. Você tem uma consulta agendada nesta data.',
@@ -93,7 +90,6 @@ export class AppointmentsController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
   @Patch(':id/finish')
   async finish(
     @Req() req: any,
@@ -109,7 +105,6 @@ export class AppointmentsController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
   @Patch(':id/cancel')
   async cancel(
     @Req() req: any,
@@ -126,7 +121,6 @@ export class AppointmentsController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
   @Put(':id')
   async update(
     @Req() req: any,
