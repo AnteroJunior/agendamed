@@ -7,27 +7,80 @@ import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { IAppointment } from 'src/interfaces/appointment.interface';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
+import { ISpeciality } from 'src/interfaces/speciality.interface';
+import { IDoctor } from 'src/interfaces/doctor.interface';
+import { FilterAppointmentsDto } from './dto/filter-appointment.dto';
 
 @Injectable()
 export class AppointmentsService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) { }
 
-  async findById(id: number): Promise<IAppointment | null> {
+  async findAllSpeciality(): Promise<ISpeciality[]> {
+    return await this.prismaService.specialities.findMany();
+  }
+
+  async findDoctorBySpeciality(speciality_id: number): Promise<IDoctor[]> {
+    return await this.prismaService.doctors.findMany({
+      where: { speciality_id: speciality_id },
+    });
+  }
+
+  async findById(id: number, user_id: number): Promise<IAppointment | null> {
     const appointment = await this.prismaService.appointments.findFirst({
       where: {
         id: id,
+        user_id: user_id,
+      },
+      include: {
+        speciality: true,
+        doctor: true,
       },
     });
 
     return appointment;
   }
 
-  async findAll() {
-    return await this.prismaService.appointments.findMany();
+  async findAll(
+    user_id: number,
+    filters: FilterAppointmentsDto,
+  ): Promise<IAppointment[]> {
+    const { page = 1, status_code, schedule_day } = filters;
+
+    const where: any = {
+      user_id,
+    };
+
+    if (status_code) {
+      where.status_code = +status_code;
+    }
+
+    if (schedule_day) {
+      const date = new Date(schedule_day);
+      const start = new Date(date);
+      start.setUTCHours(0, 0, 0, 0);
+      const end = new Date(start);
+      end.setUTCDate(end.getUTCDate() + 1);
+
+      where.schedule_day = {
+        gte: start,
+        lt: end,
+      };
+    }
+    
+    return await this.prismaService.appointments.findMany({
+      where,
+      skip: (page - 1) * 10,
+      take: 10,
+      include: {
+        speciality: true,
+        doctor: true,
+      },
+    });
   }
 
   async create(
     createAppointmentDto: CreateAppointmentDto,
+    user_id: number,
   ): Promise<{ message: string; schedule_day: string }> {
     if (new Date(createAppointmentDto.schedule_day) < new Date()) {
       throw new BadRequestException('Não é possivel agendar para o passado.');
@@ -37,7 +90,7 @@ export class AppointmentsService {
       data: {
         speciality_id: createAppointmentDto.speciality_id,
         doctor_id: createAppointmentDto.doctor_id,
-        user_id: createAppointmentDto.user_id, // trocar para verificar o JWT
+        user_id: user_id,
         schedule_day: createAppointmentDto.schedule_day,
         notes: (createAppointmentDto.notes || 'Sem observações').toUpperCase(),
       },
@@ -51,8 +104,8 @@ export class AppointmentsService {
     };
   }
 
-  async finish(id: number) {
-    const appointment = await this.findById(id);
+  async finish(id: number, user_id: number) {
+    const appointment = await this.findById(id, user_id);
     if (!appointment) {
       throw new NotFoundException('Agendamento não encontrado');
     }
@@ -66,15 +119,15 @@ export class AppointmentsService {
     }
 
     const result = await this.prismaService.appointments.update({
-      where: { id },
+      where: { id, user_id },
       data: { status_code: 1 },
     });
 
     return result;
   }
 
-  async cancel(id: number) {
-    const appointment = await this.findById(id);
+  async cancel(id: number, user_id: number) {
+    const appointment = await this.findById(id, user_id);
 
     if (!appointment) {
       throw new NotFoundException('Agendamento não encontrado');
@@ -88,13 +141,17 @@ export class AppointmentsService {
     }
 
     return await this.prismaService.appointments.update({
-      where: { id: id },
+      where: { id: id, user_id: user_id },
       data: { status_code: 2 },
     });
   }
 
-  async update(id: number, updateAppointmentDto: UpdateAppointmentDto) {
-    const appointment = await this.findById(id);
+  async update(
+    id: number,
+    updateAppointmentDto: UpdateAppointmentDto,
+    user_id: number,
+  ) {
+    const appointment = await this.findById(id, user_id);
 
     if (!appointment) {
       throw new NotFoundException('Agendamento não encontrado');
@@ -105,7 +162,7 @@ export class AppointmentsService {
     }
 
     return await this.prismaService.appointments.update({
-      where: { id: id },
+      where: { id: id, user_id: user_id },
       data: {
         schedule_day: updateAppointmentDto.schedule_day,
         notes: updateAppointmentDto.notes,

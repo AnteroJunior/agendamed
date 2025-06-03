@@ -8,9 +8,6 @@ export class CreateAppointmentDto {
   @IsNumber({}, { message: 'Especialidade obrigatória e deve ser um número' })
   doctor_id: number;
 
-  @IsNumber({}, { message: 'Especialidade obrigatória e deve ser um número' })
-  user_id: number;
-
   @IsDateString(
     { strictSeparator: true },
     { message: 'Data inválida. Separe a data da hora com o T' },

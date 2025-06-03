@@ -1,0 +1,40 @@
+<h2 mat-dialog-title>Atualizar consulta</h2>
+<mat-dialog-content>
+    <form [formGroup]="updateForm" (submit)="handleSubmit()" class="flex flex-col">
+        <mat-form-field>
+            <mat-label>Especialidade</mat-label>
+            <input matNativeControl formControlName="speciality">
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Médico</mat-label>
+            <input matNativeControl formControlName="doctor">
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Selecione uma data</mat-label>
+            <input matInput formControlName="schedule_day" [matDatepicker]="picker" required>
+            <mat-hint>DD/MM/YYYY</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field>
+            <mat-label>Hora de atendimento</mat-label>
+            <mat-select matNativeControl formControlName="schedule_hour" required>
+                <mat-option>--</mat-option>
+                @for (hour of hours; track hour) {
+                <mat-option [value]="hour">{{hour}}</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Observações</mat-label>
+            <textarea matInput placeholder="Observações" formControlName="notes" required></textarea>
+        </mat-form-field>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button matButton style="background-color: red; color: white;" (click)="dialogRef.close()">Cancelar</button>
+    <button matButton type="submit" style="background-color: green; color: white;" cdkFocusInitial
+        [disabled]="!updateForm.valid" class="cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-400"
+        (click)="handleSubmit()">Marcar consulta</button>
+</mat-dialog-actions>

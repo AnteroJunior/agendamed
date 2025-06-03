@@ -1,16 +1,17 @@
 import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { environment } from '../../../../environments/environment.development';
-import { IRegister, IRegisterError } from '../../interfaces/register.interface';
+
 import { HttpClient } from '@angular/common/http';
+import { IRegister, IRegisterError } from '../interfaces/register.interface';
+import { environment } from '../../../environments/environment.development';
 
 @Component({
-  selector: 'app-register-page',
+  selector: 'app-register',
   imports: [ReactiveFormsModule],
-  templateUrl: './register-page.html',
-  styleUrl: './register-page.scss'
+  templateUrl: './register.html',
+  styleUrl: './register.scss'
 })
-export class RegisterPage {
+export class Register {
 
   private http = inject(HttpClient)
 
@@ -22,7 +23,6 @@ export class RegisterPage {
   })
 
   handleSubmit(): void {
-    console.log(this.registerForm.value);
     this.http.post<IRegister>(`${environment.apiUrl}/users`, this.registerForm.value).subscribe({
       next: (response: IRegister) => {
         alert(response.message);
