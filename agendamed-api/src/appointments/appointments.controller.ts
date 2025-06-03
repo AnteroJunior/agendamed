@@ -3,17 +3,15 @@ import {
   Post,
   Body,
   ValidationPipe,
-  NotFoundException,
   Patch,
   Param,
   ParseIntPipe,
   Put,
   Get,
-  HttpException,
-  HttpStatus,
   UseGuards,
   Req,
   Query,
+  UseFilters,
 } from '@nestjs/common';
 import { AppointmentsService } from './appointments.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
@@ -23,8 +21,10 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ISpeciality } from 'src/interfaces/speciality.interface';
 import { IDoctor } from 'src/interfaces/doctor.interface';
 import { FilterAppointmentsDto } from './dto/filter-appointment.dto';
+import { PrismaClientExceptionFilter } from 'src/filters/prisma-exception.filter';
 
 @UseGuards(JwtAuthGuard)
+@UseFilters(PrismaClientExceptionFilter)
 @Controller('appointments')
 export class AppointmentsController {
   constructor(private readonly appointmentsService: AppointmentsService) {}
@@ -54,16 +54,7 @@ export class AppointmentsController {
     @Req() req: any,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<IAppointment | null> {
-    try {
-      return (
-        (await this.appointmentsService.findById(id, +req.user?.id)) || null
-      );
-    } catch (error: any) {
-      throw new HttpException(
-        'Agendamento não encontrado',
-        HttpStatus.NOT_FOUND,
-      );
-    }
+    return (await this.appointmentsService.findById(id, +req.user?.id)) || null;
   }
 
   @Post()
@@ -71,23 +62,8 @@ export class AppointmentsController {
     @Req() req: any,
     @Body(new ValidationPipe()) createAppointmentDto: CreateAppointmentDto,
   ): Promise<{ message: string } | undefined> {
-    try {
-      await this.appointmentsService.create(
-        createAppointmentDto,
-        +req.user?.id,
-      );
-      return { message: 'Consulta agendada com sucesso.' };
-    } catch (error) {
-      if (error.code === 'P2003') {
-        throw new NotFoundException(
-          'Agendamento não pode ser realizado. Tente novamente.',
-        );
-      } else if (error.code === 'P2002') {
-        throw new NotFoundException(
-          'Agendamento não pode ser realizado. Você tem uma consulta agendada nesta data.',
-        );
-      }
-    }
+    await this.appointmentsService.create(createAppointmentDto, +req.user?.id);
+    return { message: 'Consulta agendada com sucesso.' };
   }
 
   @Patch(':id/finish')
@@ -95,14 +71,8 @@ export class AppointmentsController {
     @Req() req: any,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<{ message: string }> {
-    try {
-      await this.appointmentsService.finish(id, +req.user?.id);
-      return { message: 'Agendamento finalizado com sucesso' };
-    } catch (error: any) {
-      throw new NotFoundException(
-        'Agendamento não finalizado. Tente novamente.',
-      );
-    }
+    await this.appointmentsService.finish(id, +req.user?.id);
+    return { message: 'Agendamento finalizado com sucesso' };
   }
 
   @Patch(':id/cancel')
@@ -110,15 +80,8 @@ export class AppointmentsController {
     @Req() req: any,
     @Param('id') id: number,
   ): Promise<{ message: string }> {
-    try {
-      await this.appointmentsService.cancel(+id, +req.user?.id);
-      return { message: 'Agendamento cancelado com sucesso' };
-    } catch (error: any) {
-      console.log(error);
-      throw new NotFoundException(
-        'Agendamento não cancelado. Tente novamente.',
-      );
-    }
+    await this.appointmentsService.cancel(+id, +req.user?.id);
+    return { message: 'Agendamento cancelado com sucesso' };
   }
 
   @Put(':id')
@@ -127,18 +90,11 @@ export class AppointmentsController {
     @Param('id', ParseIntPipe) id: number,
     @Body(new ValidationPipe()) updateAppointmentDto: UpdateAppointmentDto,
   ): Promise<{ message: string }> {
-    try {
-      await this.appointmentsService.update(
-        id,
-        updateAppointmentDto,
-        +req.user?.id,
-      );
-      return { message: 'Agendamento atualizado com sucesso' };
-    } catch (error: any) {
-      console.log(error);
-      throw new NotFoundException(
-        'Agendamento não atualizado. Tente novamente.',
-      );
-    }
+    await this.appointmentsService.update(
+      id,
+      updateAppointmentDto,
+      +req.user?.id,
+    );
+    return { message: 'Agendamento atualizado com sucesso' };
   }
 }
